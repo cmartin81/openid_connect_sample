@@ -15,7 +15,7 @@ module ConnectOp
     # Custom directories with classes and modules you want to be autoloadable.
     config.autoload_paths += %W(#{config.root}/lib)
 
-    # Only load the plugins named here, in the order given (default is alphabetical).
+# Only load the plugins named here, in the order given (default is alphabetical).
     # :all can be used as a placeholder for all plugins not explicitly named.
     # config.plugins = [ :exception_notification, :ssl_requirement, :all ]
 
@@ -45,6 +45,14 @@ module ConnectOp
     config.middleware.use Rack::OAuth2::Server::Resource::Bearer, 'OpenID Connect' do |req|
       AccessToken.valid.find_by_token(req.access_token) ||
       req.invalid_token!
+    end
+
+
+    config.middleware.insert_before 0, "Rack::Cors" do
+      allow do
+        origins '*'
+        resource '*', :headers => :any, :methods => [:get, :post, :options]
+      end
     end
 
     # class RequestResponseLogger
