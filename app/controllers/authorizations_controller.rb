@@ -16,6 +16,11 @@ class AuthorizationsController < ApplicationController
   private
 
   def call_authorization_endpoint(allow_approval = false, approved = false)
+    if(params[:prompt] == 'none')
+      approved = "true"
+      allow_approval = :allow_approval;
+    end
+
     endpoint = AuthorizationEndpoint.new current_account, allow_approval, approved
     rack_response = *endpoint.call(request.env)
     @client, @response_type, @redirect_uri, @scopes, @_request_, @request_uri, @request_object = *[
